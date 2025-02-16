@@ -1,0 +1,49 @@
+pipeline {
+    agent any  // Use any available agent/node
+
+    environment {
+        REPO_URL = 'git@github.com:gitboy321/Devops-project.git'
+    }
+
+    stages {
+        
+        stage('Checkout Code') {
+            steps {
+                script {
+                    echo "Cloning repository..."
+                    checkout scm
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo "Building the project..."
+                sh 'echo Build Step: Placeholder for actual build commands'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo "Running tests..."
+                sh 'echo Running tests in tests/ directory'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "Deploying to production..."
+                sh 'echo Deploy Step: Placeholder for actual deployment commands'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed. Check logs for details.'
+        }
+    }
+}
