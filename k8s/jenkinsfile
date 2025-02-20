@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    environment {
+        REGISTRY = 'registry.example.com'
+        FRONTEND_IMAGE = 'frontend'
+        BACKEND_IMAGE = 'backend'
+    }
+    stages {
+        stage('Build Docker Images') {
+            steps {
+                sh 'docker build -t $REGISTRY/$FRONTEND_IMAGE:$BUILD_NUMBER ./app'
+                sh 'docker build -t $REGISTRY/$BACKEND_IMAGE:$BUILD_NUMBER ./server'
+            }
+        }
+        stage('Push to Registry') {
+            steps {
+                withDockerRegistry([credentialsId: 'docker-creds', url: 'https://registry.example.com']) {
+                    sh 'docker push $REGISTRY/$FRONTEND_IMAGE:$BUILD_NUMBER'
+                    sh 'docker push $REGISTRY/$BACKEND_IMAGE:$BUILD_NUMBER'
+                }
+            }
+        }
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl apply -f k8s/frontend-deployment.yaml'
+                sh 'kubectl apply -f k8s/backend-deployment.yaml'
+            }
+        }
+    }
+}
